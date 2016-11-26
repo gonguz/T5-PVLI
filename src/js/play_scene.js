@@ -18,9 +18,19 @@ var PlayScene = {
   create: function () {
       //Creamos al player con un sprite por defecto.
       //TODO 5 Creamos a rush 'rush'  con el sprite por defecto en el 10, 10 con la animación por defecto 'rush_idle01'
-      
+      this._rush = this.game.add.sprite(10, 10, 'rush_idle01');
+
       //TODO 4: Cargar el tilemap 'tilemap' y asignarle al tileset 'patrones' la imagen de sprites 'tiles'
-      
+      this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
+      this.game.load.image('tiles', 'images/simples_pimples.png');
+      this.game.load.atlasJSONHash('animationAtlas', 'images/rush_spritesheet.png',
+      'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+
+      this.map = this.game.add.tilemap('tilemap');
+      this.map.addTilesetImage('patrones', 'tiles');
+
+
+
       //Creacion de las layers
       this.backgroundLayer = this.map.createLayer('BackgroundLayer');
       this.groundLayer = this.map.createLayer('GroundLayer');
@@ -34,9 +44,9 @@ var PlayScene = {
       this.groundLayer.setScale(3,3);
       this.backgroundLayer.setScale(3,3);
       this.death.setScale(3,3);
-      
+
       //this.groundLayer.resizeWorld(); //resize world and adjust to the screen
-      
+
       //nombre de la animación, frames, framerate, isloop
       this._rush.animations.add('run',
                     Phaser.Animation.generateFrameNames('rush_run',1,5,'',2),10,true);
@@ -46,7 +56,7 @@ var PlayScene = {
                      Phaser.Animation.generateFrameNames('rush_jump',2,2,'',2),0,false);
       this.configure();
   },
-    
+
     //IS called one per frame.
     update: function () {
         var moveDirection = new Phaser.Point(0, 0);
@@ -71,16 +81,16 @@ var PlayScene = {
                         this._playerState = PlayerState.STOP;
                         this._rush.animations.play('stop');
                     }
-                }    
+                }
                 break;
-                
+
             case PlayerState.JUMP:
-                
+
                 var currentJumpHeight = this._rush.y - this._initialJumpHeight;
                 this._playerState = (currentJumpHeight*currentJumpHeight < this._jumpHight*this._jumpHight)
                     ? PlayerState.JUMP : PlayerState.FALLING;
                 break;
-                
+
             case PlayerState.FALLING:
                 if(this.isStanding()){
                     if(movement !== Direction.NONE){
@@ -92,11 +102,11 @@ var PlayScene = {
                         this._rush.animations.play('stop');
                     }
                 }
-                break;     
+                break;
         }
         //States
         switch(this._playerState){
-                
+
             case PlayerState.STOP:
                 moveDirection.x = 0;
                 break;
@@ -111,43 +121,44 @@ var PlayScene = {
                 else{
                     moveDirection.x = -this._speed;
                     if(this._rush.scale.x > 0)
-                        this._rush.scale.x *= -1; 
+                        this._rush.scale.x *= -1;
                 }
                 if(this._playerState === PlayerState.JUMP)
                     moveDirection.y = -this._jumpSpeed;
                 if(this._playerState === PlayerState.FALLING)
                     moveDirection.y = 0;
-                break;    
+                break;
         }
         //movement
         this.movement(moveDirection,5,
                       this.backgroundLayer.layer.widthInPixels*this.backgroundLayer.scale.x - 10);
         this.checkPlayerFell();
     },
-    
-    
+
+
     canJump: function(collisionWithTilemap){
         return this.isStanding() && collisionWithTilemap || this._jamping;
     },
-    
+
     onPlayerFell: function(){
         //TODO 6 Carga de 'gameOver';
+        this.game.state.start('gameOver');
     },
-    
+
     checkPlayerFell: function(){
         if(this.game.physics.arcade.collide(this._rush, this.death))
             this.onPlayerFell();
     },
-        
+
     isStanding: function(){
         return this._rush.body.blocked.down || this._rush.body.touching.down
     },
-        
+
     isJumping: function(collisionWithTilemap){
-        return this.canJump(collisionWithTilemap) && 
+        return this.canJump(collisionWithTilemap) &&
             this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR);
     },
-        
+
     GetMovement: function(){
         var movement = Direction.NONE
         //Move Right
@@ -167,7 +178,7 @@ var PlayScene = {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.stage.backgroundColor = '#a9f0ff';
         this.game.physics.arcade.enable(this._rush);
-        
+
         this._rush.body.bounce.y = 0.2;
         this._rush.body.gravity.y = 20000;
         this._rush.body.gravity.x = 0;
@@ -177,13 +188,20 @@ var PlayScene = {
     //move the player
     movement: function(point, xMin, xMax){
         this._rush.body.velocity = point;// * this.game.time.elapseTime;
-        
+
         if((this._rush.x < xMin && point.x < 0)|| (this._rush.x > xMax && point.x > 0))
             this._rush.body.velocity.x = 0;
 
     },
-    
+
     //TODO 9 destruir los recursos tilemap, tiles y logo.
+    onFinishedPlayState: function(){
+      this.cache.removeImage('tilemap');
+      this.cache.removeImage('tiles');
+      this.cache.removeImage('logo');
+    }
+
+
 
 };
 
