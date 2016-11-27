@@ -45,7 +45,7 @@ var PlayScene = {
       this.backgroundLayer.setScale(3,3);
       this.death.setScale(3,3);
 
-      //this.groundLayer.resizeWorld(); //resize world and adjust to the screen
+      this.groundLayer.resizeWorld(); //resize world and adjust to the screen
 
       //nombre de la animación, frames, framerate, isloop
       this._rush.animations.add('run',

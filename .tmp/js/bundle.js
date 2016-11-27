@@ -2,32 +2,47 @@
 var GameOver = {
     create: function () {
         console.log("Game Over");
-        var button = this.game.add.button(400, 300, 
-                                          'button', 
-                                          this.actionOnClick, 
+        var button = this.game.add.button(400, 300,
+                                          'button',
+                                          this.actionOnClick,
                                           this, 2, 1, 0);
         button.anchor.set(0.5);
         var goText = this.game.add.text(400, 100, "GameOver");
         var text = this.game.add.text(0, 0, "Reset Game");
+        text.font = 'Sniglet';
+        goText.font = 'Sniglet';
         text.anchor.set(0.5);
         goText.anchor.set(0.5);
         button.addChild(text);
-        
+
         //TODO 8 crear un boton con el texto 'Return Main Menu' que nos devuelva al menu del juego.
-    }
-    
+        var returnButton = this.game.add.button(400, 300, 'button',
+        this.returnToMenu, this, 2, 1, 0);
+
+        returnButton.anchor.set(0.5);
+        var returnMenuText = this.game.add.text(0, 0, "Return Main Menu");
+        returnMenuText.font = 'Sniglet';
+        returnMenuText.anchor.set(0.5);
+        returnButton.addChild(returnMenuText);
+
+    },
+
     //TODO 7 declarar el callback del boton.
+    returnToMenu: function(){
+      this.game.state.start('menu');
+    }
 
 };
 
 module.exports = GameOver;
+
 },{}],2:[function(require,module,exports){
 'use strict';
 
 //TODO 1.1 Require de las escenas, play_scene, gameover_scene y menu_scene.
 
-var playScene = require('./play_scene');
-var gameOverScene = require('./gameover_scene');
+var PlayScene = require('./play_scene');
+var GameOver = require('./gameover_scene');
 var MenuScene = require('./menu_scene');
 
 //  The Google WebFont Loader will look for this object, so create it before loading the script.
@@ -44,7 +59,7 @@ var BootScene = {
   },
 
   create: function () {
-    //this.game.state.start('preloader');
+      this.game.state.start('preloader');
       this.game.state.start('menu');
   }
 };
@@ -77,17 +92,20 @@ var PreloaderScene = {
   },
 
   loadStart: function () {
-    //this.game.state.start('play');
+    this.game.state.start('play');
     console.log("Game Assets Loading ...");
   },
 
 
-     //TODO 2.2b function loadComplete()
+   //TODO 2.2b function loadComplete()
+   loadComplete: function(){
+     this.ready = true;
+     this.game.state.start('play');
+   },
 
-
-    update: function(){
-        this._loadingBar
-    }
+  update: function(){
+      this._loadingBar
+  }
 };
 
 
@@ -104,17 +122,24 @@ var wfconfig = {
 
 };
 
-//TODO 3.2 Cargar Google font cuando la página esté cargada con wfconfig.
-//TODO 3.3 La creación del juego y la asignación de los states se hará en el método init().
+function init(){
+  //TODO 3.3 La creación del juego y la asignación de los states se hará en el método init().
+  var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+  //TODO 1.2 Añadir los states 'boot' BootScene, 'menu' MenuScene, 'preloader' PreloaderScene, 'play' PlayScene, 'gameOver' GameOver.
+  game.state.add('boot', BootScene);
+  game.state.add('menu', MenuScene);
+  game.state.add('preloader', PreloaderScene);
+  game.state.add('play', PlayScene);
+  game.state.add('gameOver', GameOver);
+
+  //TODO 1.3 iniciar el state 'boot'.
+
+  game.state.start('boot');
+};
 
 window.onload = function () {
-  var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
-
-//TODO 1.2 Añadir los states 'boot' BootScene, 'menu' MenuScene, 'preloader' PreloaderScene, 'play' PlayScene, 'gameOver' GameOver.
-
-//TODO 1.3 iniciar el state 'boot'.
-
-
+  //TODO 3.2 Cargar Google font cuando la página esté cargada con wfconfig.
+  WebFont.load(wfconfig);
 };
 
 },{"./gameover_scene":1,"./menu_scene":3,"./play_scene":4}],3:[function(require,module,exports){
@@ -164,9 +189,19 @@ var PlayScene = {
   create: function () {
       //Creamos al player con un sprite por defecto.
       //TODO 5 Creamos a rush 'rush'  con el sprite por defecto en el 10, 10 con la animación por defecto 'rush_idle01'
-      
+      this._rush = this.game.add.sprite(10, 10, 'rush_idle01');
+
       //TODO 4: Cargar el tilemap 'tilemap' y asignarle al tileset 'patrones' la imagen de sprites 'tiles'
-      
+      this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
+      this.game.load.image('tiles', 'images/simples_pimples.png');
+      this.game.load.atlasJSONHash('animationAtlas', 'images/rush_spritesheet.png',
+      'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+
+      this.map = this.game.add.tilemap('tilemap');
+      this.map.addTilesetImage('patrones', 'tiles');
+
+
+
       //Creacion de las layers
       this.backgroundLayer = this.map.createLayer('BackgroundLayer');
       this.groundLayer = this.map.createLayer('GroundLayer');
@@ -180,9 +215,9 @@ var PlayScene = {
       this.groundLayer.setScale(3,3);
       this.backgroundLayer.setScale(3,3);
       this.death.setScale(3,3);
-      
-      //this.groundLayer.resizeWorld(); //resize world and adjust to the screen
-      
+
+      this.groundLayer.resizeWorld(); //resize world and adjust to the screen
+
       //nombre de la animación, frames, framerate, isloop
       this._rush.animations.add('run',
                     Phaser.Animation.generateFrameNames('rush_run',1,5,'',2),10,true);
@@ -192,7 +227,7 @@ var PlayScene = {
                      Phaser.Animation.generateFrameNames('rush_jump',2,2,'',2),0,false);
       this.configure();
   },
-    
+
     //IS called one per frame.
     update: function () {
         var moveDirection = new Phaser.Point(0, 0);
@@ -217,16 +252,16 @@ var PlayScene = {
                         this._playerState = PlayerState.STOP;
                         this._rush.animations.play('stop');
                     }
-                }    
+                }
                 break;
-                
+
             case PlayerState.JUMP:
-                
+
                 var currentJumpHeight = this._rush.y - this._initialJumpHeight;
                 this._playerState = (currentJumpHeight*currentJumpHeight < this._jumpHight*this._jumpHight)
                     ? PlayerState.JUMP : PlayerState.FALLING;
                 break;
-                
+
             case PlayerState.FALLING:
                 if(this.isStanding()){
                     if(movement !== Direction.NONE){
@@ -238,11 +273,11 @@ var PlayScene = {
                         this._rush.animations.play('stop');
                     }
                 }
-                break;     
+                break;
         }
         //States
         switch(this._playerState){
-                
+
             case PlayerState.STOP:
                 moveDirection.x = 0;
                 break;
@@ -257,43 +292,44 @@ var PlayScene = {
                 else{
                     moveDirection.x = -this._speed;
                     if(this._rush.scale.x > 0)
-                        this._rush.scale.x *= -1; 
+                        this._rush.scale.x *= -1;
                 }
                 if(this._playerState === PlayerState.JUMP)
                     moveDirection.y = -this._jumpSpeed;
                 if(this._playerState === PlayerState.FALLING)
                     moveDirection.y = 0;
-                break;    
+                break;
         }
         //movement
         this.movement(moveDirection,5,
                       this.backgroundLayer.layer.widthInPixels*this.backgroundLayer.scale.x - 10);
         this.checkPlayerFell();
     },
-    
-    
+
+
     canJump: function(collisionWithTilemap){
         return this.isStanding() && collisionWithTilemap || this._jamping;
     },
-    
+
     onPlayerFell: function(){
         //TODO 6 Carga de 'gameOver';
+        this.game.state.start('gameOver');
     },
-    
+
     checkPlayerFell: function(){
         if(this.game.physics.arcade.collide(this._rush, this.death))
             this.onPlayerFell();
     },
-        
+
     isStanding: function(){
         return this._rush.body.blocked.down || this._rush.body.touching.down
     },
-        
+
     isJumping: function(collisionWithTilemap){
-        return this.canJump(collisionWithTilemap) && 
+        return this.canJump(collisionWithTilemap) &&
             this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR);
     },
-        
+
     GetMovement: function(){
         var movement = Direction.NONE
         //Move Right
@@ -313,7 +349,7 @@ var PlayScene = {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.stage.backgroundColor = '#a9f0ff';
         this.game.physics.arcade.enable(this._rush);
-        
+
         this._rush.body.bounce.y = 0.2;
         this._rush.body.gravity.y = 20000;
         this._rush.body.gravity.x = 0;
@@ -323,13 +359,20 @@ var PlayScene = {
     //move the player
     movement: function(point, xMin, xMax){
         this._rush.body.velocity = point;// * this.game.time.elapseTime;
-        
+
         if((this._rush.x < xMin && point.x < 0)|| (this._rush.x > xMax && point.x > 0))
             this._rush.body.velocity.x = 0;
 
     },
-    
+
     //TODO 9 destruir los recursos tilemap, tiles y logo.
+    onFinishedPlayState: function(){
+      this.cache.destroy('tilemap');
+      this.cache.destroy('tiles');
+      this.cache.destroy('logo');
+    }
+
+
 
 };
 

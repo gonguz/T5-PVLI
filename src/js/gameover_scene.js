@@ -24,7 +24,7 @@ var GameOver = {
         returnMenuText.anchor.set(0.5);
         returnButton.addChild(returnMenuText);
 
-    }
+    },
 
     //TODO 7 declarar el callback del boton.
     returnToMenu: function(){

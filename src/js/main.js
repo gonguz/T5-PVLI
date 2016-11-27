@@ -20,7 +20,7 @@ var BootScene = {
   },
 
   create: function () {
-    //this.game.state.start('preloader');
+      this.game.state.start('preloader');
       this.game.state.start('menu');
   }
 };
@@ -53,19 +53,20 @@ var PreloaderScene = {
   },
 
   loadStart: function () {
-    //this.game.state.start('play');
+    this.game.state.start('play');
     console.log("Game Assets Loading ...");
   },
 
 
-     //TODO 2.2b function loadComplete()
-     loadComplete: function(){
-       this.ready = true;
-     }
+   //TODO 2.2b function loadComplete()
+   loadComplete: function(){
+     this.ready = true;
+     this.game.state.start('play');
+   },
 
-    update: function(){
-        this._loadingBar
-    }
+  update: function(){
+      this._loadingBar
+  }
 };
 
 
@@ -86,15 +87,15 @@ function init(){
   //TODO 3.3 La creación del juego y la asignación de los states se hará en el método init().
   var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
   //TODO 1.2 Añadir los states 'boot' BootScene, 'menu' MenuScene, 'preloader' PreloaderScene, 'play' PlayScene, 'gameOver' GameOver.
-  this.game.state.add('boot', BootScene);
-  this.game.state.add('menu', MenuScene);
-  this.game.state.add('preloader', PreloaderScene);
-  this.game.state.add('play', PlayScene);
-  this.game.state.add('gameOver', GameOver);
+  game.state.add('boot', BootScene);
+  game.state.add('menu', MenuScene);
+  game.state.add('preloader', PreloaderScene);
+  game.state.add('play', PlayScene);
+  game.state.add('gameOver', GameOver);
 
   //TODO 1.3 iniciar el state 'boot'.
 
-  this.game.state.start('boot');
+  game.state.start('boot');
 };
 
 window.onload = function () {
