@@ -28,6 +28,10 @@ var GameOver = {
     },
 
     //TODO 7 declarar el callback del boton.
+	
+	actionOnClick: function(){
+		this.game.state.start('play');
+	},
     returnToMenu: function(){
       this.game.state.start('menu');
     }
@@ -41,9 +45,9 @@ module.exports = GameOver;
 
 //TODO 1.1 Require de las escenas, play_scene, gameover_scene y menu_scene.
 
-var PlayScene = require('./play_scene');
-var GameOver = require('./gameover_scene');
-var MenuScene = require('./menu_scene');
+var playScene = require('./play_scene.js');
+var gameOver = require('./gameover_scene.js');
+var menuScene = require('./menu_scene.js');
 
 //  The Google WebFont Loader will look for this object, so create it before loading the script.
 
@@ -59,7 +63,7 @@ var BootScene = {
   },
 
   create: function () {
-      this.game.state.start('preloader');
+      //this.game.state.start('preloader');
       this.game.state.start('menu');
   }
 };
@@ -92,7 +96,7 @@ var PreloaderScene = {
   },
 
   loadStart: function () {
-    this.game.state.start('play');
+    //this.game.state.start('play');
     console.log("Game Assets Loading ...");
   },
 
@@ -100,7 +104,7 @@ var PreloaderScene = {
    //TODO 2.2b function loadComplete()
    loadComplete: function(){
      this.ready = true;
-     this.game.state.start('play');
+     //this.game.state.start('play');
    },
 
   update: function(){
@@ -127,10 +131,10 @@ function init(){
   var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
   //TODO 1.2 Añadir los states 'boot' BootScene, 'menu' MenuScene, 'preloader' PreloaderScene, 'play' PlayScene, 'gameOver' GameOver.
   game.state.add('boot', BootScene);
-  game.state.add('menu', MenuScene);
+  game.state.add('menu', menuScene);
   game.state.add('preloader', PreloaderScene);
-  game.state.add('play', PlayScene);
-  game.state.add('gameOver', GameOver);
+  game.state.add('play', playScene);
+  game.state.add('gameOver', gameOver);
 
   //TODO 1.3 iniciar el state 'boot'.
 
@@ -142,7 +146,7 @@ window.onload = function () {
   WebFont.load(wfconfig);
 };
 
-},{"./gameover_scene":1,"./menu_scene":3,"./play_scene":4}],3:[function(require,module,exports){
+},{"./gameover_scene.js":1,"./menu_scene.js":3,"./play_scene.js":4}],3:[function(require,module,exports){
 var MenuScene = {
     create: function () {
         
@@ -192,10 +196,6 @@ var PlayScene = {
       this._rush = this.game.add.sprite(10, 10, 'rush_idle01');
 
       //TODO 4: Cargar el tilemap 'tilemap' y asignarle al tileset 'patrones' la imagen de sprites 'tiles'
-      this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
-      this.game.load.image('tiles', 'images/simples_pimples.png');
-      this.game.load.atlasJSONHash('animationAtlas', 'images/rush_spritesheet.png',
-      'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 
       this.map = this.game.add.tilemap('tilemap');
       this.map.addTilesetImage('patrones', 'tiles');
@@ -366,11 +366,11 @@ var PlayScene = {
     },
 
     //TODO 9 destruir los recursos tilemap, tiles y logo.
-    onFinishedPlayState: function(){
+    /*onFinishedPlayState: function(){
       this.cache.destroy('tilemap');
       this.cache.destroy('tiles');
       this.cache.destroy('logo');
-    }
+    }*/
 
 
 

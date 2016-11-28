@@ -21,10 +21,6 @@ var PlayScene = {
       this._rush = this.game.add.sprite(10, 10, 'rush_idle01');
 
       //TODO 4: Cargar el tilemap 'tilemap' y asignarle al tileset 'patrones' la imagen de sprites 'tiles'
-      this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
-      this.game.load.image('tiles', 'images/simples_pimples.png');
-      this.game.load.atlasJSONHash('animationAtlas', 'images/rush_spritesheet.png',
-      'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 
       this.map = this.game.add.tilemap('tilemap');
       this.map.addTilesetImage('patrones', 'tiles');
@@ -195,11 +191,11 @@ var PlayScene = {
     },
 
     //TODO 9 destruir los recursos tilemap, tiles y logo.
-    onFinishedPlayState: function(){
+    /*onFinishedPlayState: function(){
       this.cache.destroy('tilemap');
       this.cache.destroy('tiles');
       this.cache.destroy('logo');
-    }
+    }*/
 
 
 
