@@ -20,7 +20,7 @@ var GameOver = {
         this.returnToMenu, this, 2, 1, 0);
 
         returnButton.anchor.set(0.5);
-        var returnMenuText = this.game.add.text(0, 0, "Return Main Menu");
+        var returnMenuText = this.game.add.text(0, 0, "Return Menu");
         returnMenuText.font = 'Sniglet';
         returnMenuText.anchor.set(0.5);
         returnButton.addChild(returnMenuText);
@@ -28,12 +28,14 @@ var GameOver = {
     },
 
     //TODO 7 declarar el callback del boton.
-	
+
 	actionOnClick: function(){
 		this.game.state.start('play');
 	},
     returnToMenu: function(){
-      this.game.state.start('menu');
+      //Tuve que poner que haga de nuevo play, ya que si iba al menu, al volver
+      //a empezar y pulsando una tecla, volvía de nuevo al menu.
+      this.game.state.start('play');
     }
 
 };
@@ -85,12 +87,12 @@ var PreloaderScene = {
       //como descriptor de la animación.
     this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('tiles', 'images/simples_pimples.png');
-    this.game.load.atlasJSONHash('animationAtlas', 'images/rush_spritesheet.png',
+    this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
     'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH); //No se si estará
     //bien, sacado de https://phaser.io/examples/v2/loader/load-texture-atlas
 
       //TODO 2.2a Escuchar el evento onLoadComplete con el método loadComplete que el state 'play'
-
+      //hacemos lo mismo para escuchar el evento de start
     this.load.onLoadComplete.add(this.loadComplete, this);
 
   },
@@ -104,7 +106,7 @@ var PreloaderScene = {
    //TODO 2.2b function loadComplete()
    loadComplete: function(){
      this.ready = true;
-     //this.game.state.start('play');
+     this.game.state.start('play');
    },
 
   update: function(){
@@ -149,15 +151,15 @@ window.onload = function () {
 },{"./gameover_scene.js":1,"./menu_scene.js":3,"./play_scene.js":4}],3:[function(require,module,exports){
 var MenuScene = {
     create: function () {
-        
-        var logo = this.game.add.sprite(this.game.world.centerX, 
-                                        this.game.world.centerY, 
+
+        var logo = this.game.add.sprite(this.game.world.centerX,
+                                        this.game.world.centerY,
                                         'logo');
         logo.anchor.setTo(0.5, 0.5);
-        var buttonStart = this.game.add.button(this.game.world.centerX, 
-                                               this.game.world.centerY, 
-                                               'button', 
-                                               this.actionOnClick, 
+        var buttonStart = this.game.add.button(this.game.world.centerX,
+                                               this.game.world.centerY,
+                                               'button',
+                                               this.actionOnClick,
                                                this, 2, 1, 0);
         buttonStart.anchor.set(0.5);
         var textStart = this.game.add.text(0, 0, "Start");
@@ -165,13 +167,14 @@ var MenuScene = {
         textStart.anchor.set(0.5);
         buttonStart.addChild(textStart);
     },
-    
+
     actionOnClick: function(){
         this.game.state.start('preloader');
-    } 
+    }
 };
 
 module.exports = MenuScene;
+
 },{}],4:[function(require,module,exports){
 'use strict';
 
@@ -366,11 +369,11 @@ var PlayScene = {
     },
 
     //TODO 9 destruir los recursos tilemap, tiles y logo.
-    /*onFinishedPlayState: function(){
-      this.cache.destroy('tilemap');
-      this.cache.destroy('tiles');
-      this.cache.destroy('logo');
-    }*/
+    onFinishedPlayState: function(){
+      this.game.world.setBounds(0,0,800,600);
+      this.tilemap.destroy();
+      this.tiles.destroy();
+    }
 
 
 

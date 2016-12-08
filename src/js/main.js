@@ -42,12 +42,12 @@ var PreloaderScene = {
       //como descriptor de la animación.
     this.game.load.tilemap('tilemap', 'images/map.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('tiles', 'images/simples_pimples.png');
-    this.game.load.atlasJSONHash('animationAtlas', 'images/rush_spritesheet.png',
+    this.game.load.atlasJSONHash('rush_idle01', 'images/rush_spritesheet.png',
     'images/rush_spritesheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH); //No se si estará
     //bien, sacado de https://phaser.io/examples/v2/loader/load-texture-atlas
 
       //TODO 2.2a Escuchar el evento onLoadComplete con el método loadComplete que el state 'play'
-
+      //hacemos lo mismo para escuchar el evento de start
     this.load.onLoadComplete.add(this.loadComplete, this);
 
   },
@@ -61,7 +61,7 @@ var PreloaderScene = {
    //TODO 2.2b function loadComplete()
    loadComplete: function(){
      this.ready = true;
-     //this.game.state.start('play');
+     this.game.state.start('play');
    },
 
   update: function(){

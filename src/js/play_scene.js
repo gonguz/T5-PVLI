@@ -191,11 +191,11 @@ var PlayScene = {
     },
 
     //TODO 9 destruir los recursos tilemap, tiles y logo.
-    /*onFinishedPlayState: function(){
-      this.cache.destroy('tilemap');
-      this.cache.destroy('tiles');
-      this.cache.destroy('logo');
-    }*/
+    onFinishedPlayState: function(){
+      this.game.world.setBounds(0,0,800,600);
+      this.tilemap.destroy();
+      this.tiles.destroy();
+    }
 
 
 

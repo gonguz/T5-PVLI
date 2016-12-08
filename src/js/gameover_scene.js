@@ -19,7 +19,7 @@ var GameOver = {
         this.returnToMenu, this, 2, 1, 0);
 
         returnButton.anchor.set(0.5);
-        var returnMenuText = this.game.add.text(0, 0, "Return Main Menu");
+        var returnMenuText = this.game.add.text(0, 0, "Return Menu");
         returnMenuText.font = 'Sniglet';
         returnMenuText.anchor.set(0.5);
         returnButton.addChild(returnMenuText);
@@ -27,12 +27,14 @@ var GameOver = {
     },
 
     //TODO 7 declarar el callback del boton.
-	
+
 	actionOnClick: function(){
 		this.game.state.start('play');
 	},
     returnToMenu: function(){
-      this.game.state.start('menu');
+      //Tuve que poner que haga de nuevo play, ya que si iba al menu, al volver
+      //a empezar y pulsando una tecla, volvía de nuevo al menu.
+      this.game.state.start('play');
     }
 
 };
